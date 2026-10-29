@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pratapgarh Prime Estates - Touch Fix</title>
+<style>
+:root{--navy:#0a1931;--gold:#d4af37;--bg:#050d1e;--card:#112240}
+[data-theme="light"]{--bg:#fff8ec;--navy:#ffffff;--card:#fff}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI,sans-serif}
+body{background:var(--bg);color:#fff;transition:.3s}
+[data-theme="light"] body{color:#0a1931}
+.top{position:sticky;top:0;z-index:100;background:var(--navy);border-bottom:2px solid var(--gold);padding:10px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.logo{display:flex;gap:8px;align-items:center;color:var(--gold);font-weight:900;font-size:13px}
+.logo-icon{width:32px;height:32px;background:var(--gold);color:var(--navy);display:grid;place-items:center;border-radius:8px}
+.controls{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.liveTime{border:1px solid var(--gold);color:var(--gold);padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(212,175,55,.15)}
+.selectLang{border:1px solid var(--gold);background:var(--card);color:var(--gold);padding:6px 8px;border-radius:8px;font-size:11px}
+.iconBtn{width:32px;height:32px;border-radius:50%;border:1px solid var(--gold);background:var(--card);color:var(--gold);cursor:pointer;display:grid;place-items:center}
+.page{display:none}.page.active{display:block;animation:fade .3s}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.hero{text-align:center;padding:14px;background:var(--navy)}
+.hero h1{color:var(--gold);font-size:26px;font-family:serif}
+.hero p{opacity:.8;font-size:12px;margin-top:4px}
+.dateBox{margin-top:8px;color:var(--gold);font-size:11px;font-weight:600}
+.heroImg{margin:12px auto;border:3px solid var(--gold);border-radius:16px;overflow:hidden;max-width:600px}
+.heroImg img{width:100%;height:200px;object-fit:cover;display:block}
+.viewer{position:relative;width:100%;height:52vh;background:#000;overflow:hidden;cursor:grab;touch-action:none}
+.viewer-inner{position:absolute;left:-100%;top:0;width:300%;height:100%;background:url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1400') center/cover no-repeat}
+.badge360{position:absolute;top:12px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.8);border:1px solid var(--gold);color:var(--gold);padding:6px 14px;border-radius:20px;font-size:11px}
+.hint360{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.8);border:1px solid var(--gold);color:var(--gold);padding:6px 14px;border-radius:20px;font-size:11px}
+.rooms{display:flex;gap:8px;padding:10px;background:var(--navy);overflow-x:auto;border-top:1px solid var(--gold);border-bottom:1px solid var(--gold)}
+.rooms div{min-width:70px;text-align:center;opacity:.6;cursor:pointer;transition:.2s}
+.rooms div.active{opacity:1;outline:2px solid var(--gold);border-radius:10px}
+.rooms img{width:70px;height:45px;border-radius:8px;object-fit:cover}
+.rooms p{font-size:10px;color:var(--gold);margin-top:3px}
+.card{background:var(--navy);margin:10px;border:1px solid var(--gold);border-radius:16px;padding:12px}
+.btn{padding:12px;border-radius:10px;border:none;font-weight:800;cursor:pointer;width:100%;font-size:13px}
+.btn.gold{background:var(--gold);color:var(--navy)} .btn.out{background:transparent;border:1px solid var(--gold);color:var(--gold)}
+.flex{display:flex;gap:8px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:8px}
+.pcard{background:var(--card);border-radius:14px;overflow:hidden;border:1px solid #1e3a5f;position:relative;cursor:pointer}
+.pcard img{width:100%;height:120px;object-fit:cover;display:block}
+.pcard .d{padding:8px}.pcard b{color:var(--gold);font-size:12px;display:block}.pcard small{font-size:10px;opacity:.7}
+.heart{position:absolute;top:6px;right:6px;width:28px;height:28px;background:rgba(0,0,0,.6);border-radius:50%;display:grid;place-items:center;color:#fff}
+.heart.liked{background:#fff;color:#ff2a2a}
+.videoBox{border:2px solid var(--gold);border-radius:14px;overflow:hidden;margin-top:8px}
+.videoBox iframe{width:100%;height:200px;display:block}
+.stars{font-size:26px;color:#333;cursor:pointer}.stars.on{color:var(--gold)}
+.review{background:var(--card);border:1px solid #1e3a5f;border-radius:12px;padding:10px;margin:8px 0}
+.bottomNav{position:fixed;bottom:0;left:0;right:0;background:var(--navy);border-top:2px solid var(--gold);display:flex;justify-content:space-around;padding:8px 0;z-index:90}
+.bottomNav div{text-align:center;font-size:10px;opacity:.6;cursor:pointer}.bottomNav div.active{opacity:1;color:var(--gold)}
+input,select,textarea{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:1px solid #444;background:#0f2040;color:#fff;font-size:13px}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="logo"><div class="logo-icon">PP</div><div>PRATAPGARH<br><span style="font-size:8px;opacity:.7">PRIME ESTATES</span></div></div>
+  <div class="controls">
+    <span id="liveTime" class="liveTime">--:--</span>
+    <select id="langSelect" class="selectLang" onchange="changeLang(this.value)">
+      <option value="en">English</option><option value="hi">हिंदी</option><option value="bn">বাংলা</option><option value="te">తెలుగు</option><option value="mr">मराठी</option><option value="ta">தமிழ்</option><option value="gu">ગુજરાતી</option><option value="kn">ಕನ್ನಡ</option><option value="ml">മലയാളം</option><option value="pa">ਪੰਜਾਬੀ</option><option value="or">ଓଡ଼ିଆ</option><option value="ur">اردو</option>
+    </select>
+    <button class="iconBtn" id="themeBtn" onclick="toggleTheme()">🌙</button>
+  </div>
+</div>
+<div id="home" class="page active">
+  <div class="hero">
+    <h1 id="hTitle">Luxury Residences</h1>
+    <p id="hSub">Touch any villa from All Properties to view here</p>
+    <div class="dateBox">📅 <span id="fullDate">--</span> | 🕒 <span id="currentTime">--</span></div>
+    <div class="heroImg"><img id="heroMainImg" src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=900" alt="villa"></div>
+  </div>
+  <div class="viewer" id="viewer">
+    <div class="viewer-inner" id="vInner"></div>
+    <div class="badge360" id="viewerLabel">● 360° VIEW - DRAG TO ROTATE</div>
+    <div class="hint360" id="swipeHint">👆 Finger se kheecho - 360° ghumega</div>
+  </div>
+  <div class="rooms" id="rooms"></div>
+  <div class="card">
+    <div class="flex" style="justify-content:space-between;align-items:center">
+      <b id="pTitle" style="font-size:15px">4 BHK Luxury Villa - Katra</b>
+      <b id="pPrice" style="color:var(--gold)">₹4.25 Cr</b>
+    </div>
+    <small id="pMeta" style="opacity:.7">Skyline Villa • 3200 sqft • RERA Verified</small>
+    <div class="flex" style="margin-top:10px">
+      <button class="btn gold" style="flex:1" onclick="shareWA()">Share</button>
+      <button class="btn out" style="flex:1" onclick="toggleWishCurrent()">♡ Wishlist</button>
+      <button class="btn gold" style="flex:1" onclick="go('contact')">Book Visit</button>
+    </div>
+  </div>
+  <div class="card">
+    <h3 style="color:var(--gold)">🎥 Premium Video Tours</h3>
+    <div class="videoBox"><iframe src="https://www.youtube.com/embed/5R2x7a7j3pE?rel=0&mute=1" frameborder="0" allowfullscreen></iframe></div>
+    <div class="videoBox"><iframe src="https://www.youtube.com/embed/8sJ2Tq4t0yA?rel=0&mute=1" frameborder="0" allowfullscreen></iframe></div>
+    <div class="videoBox"><iframe src="https://www.youtube.com/embed/B0y8Ac0uA48?rel=0&mute=1" frameborder="0" allowfullscreen></iframe></div>
+  </div>
+    <div class="card">
+    <h3 style="color:var(--gold)">🏦 EMI Calculator</h3>
+    <div class="flex"><input id="loanAmt" placeholder="Loan Amount"><input id="loanRate" style="max-width:80px" placeholder="8.5%"><input id="loanYr" style="max-width:70px" placeholder="20Y"></div>
+    <button class="btn gold" style="margin-top:8px" onclick="calcEMI()">Calculate EMI</button>
+    <p id="emiResult" style="margin-top:10px;color:var(--gold);font-weight:800"></p>
+  </div>
+  <br><br><br>
+</div>
+
+<div id="feedback" class="page"><div style="padding:12px"><h2 style="color:var(--gold)">⭐ Client Feedback</h2><div class="card"><h4>Give Your Feedback</h4><div style="margin:10px 0"><span class="stars" onclick="setStar(1)">★</span><span class="stars" onclick="setStar(2)">★</span><span class="stars" onclick="setStar(3)">★</span><span class="stars" onclick="setStar(4)">★</span><span class="stars" onclick="setStar(5)">★</span><span id="starText" style="margin-left:8px;font-size:12px;opacity:.7">Select rating</span></div><input id="fbName" placeholder="Your Name"><textarea id="fbText" rows="3" placeholder="Write your experience..."></textarea><button class="btn gold" onclick="submitFeedback()">Submit Feedback ★</button></div><div class="card"><h4>🌟 Reviews (<span id="fbCount">0</span>) Avg: <span id="avgRating" style="color:var(--gold)">4.9 ★</span></h4><div id="feedbackList"></div></div></div><br><br><br></div>
+<div id="properties" class="page"><div style="padding:10px"><h3 style="color:var(--gold)">🏢 All Properties - Tap any to view 360°</h3></div><div class="grid" id="grid"></div><br><br><br></div>
+<div id="wishlist" class="page"><div style="padding:10px"><h3 style="color:var(--gold)">❤ Wishlist (<span id="wishCount2">0</span>)</h3></div><div class="grid" id="wishGrid"></div><br><br><br></div>
+<div id="contact" class="page"><div style="padding:12px"><div class="card"><h2 style="color:var(--gold)">Contact Us</h2><input id="cName" placeholder="Your Name"><input id="cPhone" placeholder="Mobile"><textarea id="cMsg" rows="3" placeholder="Message"></textarea><button class="btn gold" onclick="sendInq()">Send Inquiry → WhatsApp</button><div style="margin-top:12px;font-size:11px">📍 Katra Road, Pratapgarh<br>🕒 <span id="footerTime"></span><br>📅 <span id="footerDate"></span></div></div></div><br><br><br></div>
+
+<div class="bottomNav">
+  <div id="b-home" class="active" onclick="go('home')">🏠<br>Home</div>
+  <div id="b-properties" onclick="go('properties')">🏢<br>Props</div>
+  <div id="b-feedback" onclick="go('feedback')">⭐<br>Feedback</div>
+  <div id="b-wish" onclick="go('wishlist')">❤<br>Wish</div>
+  <div id="b-contact" onclick="go('contact')">📞<br>Contact</div>
+</div>
+
+<script>
+let curLang='en';
+function changeLang(l){curLang=l;localStorage.setItem('lang',l);updateTime();}
+function updateTime(){let now=new Date();let time=now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true});let date=now.toLocaleDateString('en-IN',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});document.getElementById('liveTime').innerText=time;document.getElementById('currentTime').innerText=time;document.getElementById('fullDate').innerText=date;document.getElementById('footerTime').innerText=time;document.getElementById('footerDate').innerText=date;}
+setInterval(updateTime,1000);changeLang('en');
+let isLight=false;function toggleTheme(){isLight=!isLight;document.documentElement.setAttribute('data-theme',isLight?'light':'dark');document.getElementById('themeBtn').innerText=isLight?'☀️':'🌙';}
+let posX=-100,autoRotate=false;
+let viewer=document.getElementById('viewer'),vInner=document.getElementById('vInner');
+function setPos(x){posX=x;if(posX<-200)posX=-200;if(posX>0)posX=0;vInner.style.left=posX+'%';}
+let dragging=false,startX=0;
+viewer.addEventListener('touchstart',e=>{dragging=true;startX=e.touches[0].clientX;},{passive:false});
+viewer.addEventListener('touchmove',e=>{if(!dragging)return;let dx=(e.touches[0].clientX-startX)/1.5;setPos(posX+dx);startX=e.touches[0].clientX;e.preventDefault();},{passive:false});
+viewer.addEventListener('touchend',()=>{dragging=false;});
+viewer.addEventListener('mousedown',e=>{dragging=true;startX=e.clientX;});
+window.addEventListener('mousemove',e=>{if(!dragging)return;let dx=(e.clientX-startX)/1.5;setPos(posX+dx);startX=e.clientX;});
+window.addEventListener('mouseup',()=>{dragging=false;});
+const roomsData=[
+ {id:'living',name:'Living',img:'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=300',pano:'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1400'},
+ {id:'kitchen',name:'Kitchen',img:'https://images.unsplash.com/photo-1556911220-bff31c812dba?w=300',pano:'https://images.unsplash.com/photo-1556911220-bff31c812dba?w=1400'},
+ {id:'bed',name:'Bedroom',img:'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=300',pano:'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=1400'},
+ {id:'hall',name:'Hall',img:'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=300',pano:'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1400'}
+];
+let curRoom='living';
+function loadRooms(){let h='';roomsData.forEach(r=>{h+=`<div class="${r.id==curRoom?'active':''}" onclick="switchRoom('${r.id}')"><img src="${r.img}"><p>${r.name}</p></div>`});document.getElementById('rooms').innerHTML=h;}
+function switchRoom(id){curRoom=id;let r=roomsData.find(x=>x.id==id);vInner.style.backgroundImage=`url('${r.pano}')`;posX=-100;setPos(posX);loadRooms();}
+loadRooms();
+let wishlist=JSON.parse(localStorage.getItem('wish')||'[]');
+let allProps=[];for(let i=1;i<=100;i++){let loc=i%3==0?'Gurugram':i%3==1?'Katra':'Bela';let price=i%3==0?(2+i%5)+'.'+(i%9)+' Cr':(25+i%40)+' Lakh';allProps.push({id:i,title:loc+' Villa '+i,loc:loc,price:'₹'+price,img:`https://picsum.photos/seed/${i+100}/400/300`,big:`https://picsum.photos/seed/${i+100}/1200/800`});}
+function renderProps(){let h='';allProps.forEach(p=>{let liked=wishlist.includes(p.id);h+=`<div class="pcard" onclick="openProp(${p.id})"><div class="heart ${liked?'liked':''}" onclick="event.stopPropagation();toggleWish(${p.id})">${liked?'♥':'♡'}</div><img src="${p.img}" loading="lazy"><div class="d"><b>${p.title}</b><small>📍 ${p.loc}</small><b style="color:var(--gold)">${p.price}</b></div></div>`});document.getElementById('grid').innerHTML=h;}
+function toggleWish(id){if(wishlist.includes(id)) wishlist=wishlist.filter(x=>x!=id); else wishlist.push(id);localStorage.setItem('wish',JSON.stringify(wishlist));renderProps();renderWish();}
+function renderWish(){let h='';wishlist.forEach(id=>{let p=allProps.find(x=>x.id==id);if(p) h+=`<div class="pcard" onclick="openProp(${p.id})"><img src="${p.img}"><div class="d"><b>${p.title}</b><b style="color:var(--gold)">${p.price}</b></div></div>`});document.getElementById('wishGrid').innerHTML=h||'<p style="padding:20px;opacity:.6">No wishlist yet</p>';document.getElementById('wishCount2').innerText=wishlist.length;}
+function openProp(id){
+  let p=allProps.find(x=>x.id==id);
+  document.getElementById('pTitle').innerText=p.title;
+  document.getElementById('pPrice').innerText=p.price;
+  document.getElementById('pMeta').innerText=p.loc+' • RERA Verified • Drag se 360° ghumao';
+  document.getElementById('heroMainImg').src=p.big;
+  vInner.style.backgroundImage=`url('${p.big}')`;
+  posX=-100; setPos(posX);
+  go('home');
+  window.scrollTo(0,0);
+}
+function toggleWishCurrent(){let t=document.getElementById('pTitle').innerText;let p=allProps.find(x=>t.includes(x.title.split(' ')[0]));if(p) toggleWish(p.id);}
+renderProps();renderWish();
+let curStar=0;let feedbacks=JSON.parse(localStorage.getItem('feedbacks')||'[]');
+function setStar(n){curStar=n;document.querySelectorAll('.stars').forEach((s,i)=>{s.classList.toggle('on',i<n)});document.getElementById('starText').innerText=n+' Star';}
+function submitFeedback(){let name=document.getElementById('fbName').value||'Guest';let text=document.getElementById('fbText').value;if(!text||curStar==0){alert('Please select star and write feedback');return;}let f={name:name,text:text,star:curStar,date:new Date().toLocaleDateString()};feedbacks.unshift(f);localStorage.setItem('feedbacks',JSON.stringify(feedbacks));document.getElementById('fbName').value='';document.getElementById('fbText').value='';curStar=0;document.querySelectorAll('.stars').forEach(s=>s.classList.remove('on'));renderFeedbacks();alert('Thanks! Feedback saved');}
+function renderFeedbacks(){let defaults=[{name:'Amit Singh - Katra',text:'Best service in Pratapgarh, loan + registry dono ho gaya.',star:5,date:'2 days ago'},{name:'Priya Sharma - Bela',text:'Villa exactly as 360 tour.',star:5,date:'1 week ago'}];let all=[...feedbacks,...defaults];let avg=(all.reduce((a,b)=>a+b.star,0)/all.length).toFixed(1);document.getElementById('fbCount').innerText=all.length;document.getElementById('avgRating').innerText=avg+' ★';let html='';all.forEach(f=>{html+=`<div class="review"><b>${'⭐'.repeat(f.star)} ${f.name}</b><br><small style="opacity:.6">${f.date}</small><p style="margin-top:6px;font-size:13px">${f.text}</p></div>`});document.getElementById('feedbackList').innerHTML=html;}
+renderFeedbacks();
+function go(pg){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.getElementById(pg).classList.add('active');document.querySelectorAll('.bottomNav div').forEach(x=>x.classList.remove('active'));let b=document.getElementById('b-'+pg);if(b) b.classList.add('active');window.scrollTo(0,0);}
+function calcEMI(){let P=parseInt(document.getElementById('loanAmt').value)||4250000;let R=(parseFloat(document.getElementById('loanRate').value)||8.5)/12/100;let N=(parseInt(document.getElementById('loanYr').value)||20)*12;let emi=P*R*Math.pow(1+R,N)/(Math.pow(1+R,N)-1);document.getElementById('emiResult').innerText=`EMI: ₹${Math.round(emi).toLocaleString('en-IN')}/mo | Registry 8%: ₹${Math.round(P*0.08).toLocaleString('en-IN')}`;}
+function sendInq(){let n=document.getElementById('cName').value||'Client';window.open('https://wa.me/9198XXXXXXX?text='+encodeURIComponent('Hi I am '+n+' interested'),' _blank');}
+function shareWA(){window.open('https://wa.me/?text='+encodeURIComponent('Pratapgarh Prime Estates'),' _blank');}
+</script>
+</body>
+</html>
